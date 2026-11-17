@@ -1,0 +1,11 @@
+services:
+  cms:
+    image: av1sharma/pa5-cms:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - cms-data:/app/instance
+    restart: unless-stopped
+
+volumes:
+  cms-data:
