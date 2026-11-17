@@ -1,0 +1,354 @@
+""" 
+Unit Test for Assignment A3
+
+This module tests the functions in a3 with cases for color formatting,
+conversion, and contrast.
+
+Avi Sharma (as4632)
+October 8, 2026
+""" 
+import introcs
+import a3
+
+
+def test_complement():
+    """
+    Test function complement
+    """
+    print('Testing complement')
+
+    # One test is really good enough here
+    comp = a3.complement_rgb(introcs.RGB(250, 0, 71))
+    introcs.assert_equals(255-250, comp.red)
+    introcs.assert_equals(255-0,   comp.green)
+    introcs.assert_equals(255-71,  comp.blue)
+
+    # One more for good measure
+    comp = a3.complement_rgb(introcs.RGB(128, 64, 255))
+    introcs.assert_equals(255-128, comp.red)
+    introcs.assert_equals(255-64,  comp.green)
+    introcs.assert_equals(255-255, comp.blue)
+
+
+def test_str5():
+    """
+    Test function str5
+    """
+
+    introcs.assert_equals('130.6',  a3.str5(130.59))
+    introcs.assert_equals('130.5',  a3.str5(130.54))
+    introcs.assert_equals('100.0',  a3.str5(100))
+    introcs.assert_equals('100.6',  a3.str5(100.56))
+    introcs.assert_equals('99.57',  a3.str5(99.566))
+    introcs.assert_equals('99.99',  a3.str5(99.99))
+    introcs.assert_equals('100.0',  a3.str5(99.995))
+    introcs.assert_equals('22.00',  a3.str5(21.99575))
+    introcs.assert_equals('21.99',  a3.str5(21.994))
+    introcs.assert_equals('10.01',  a3.str5(10.013567))
+    introcs.assert_equals('10.00',  a3.str5(10.000000005))
+    introcs.assert_equals('10.00',  a3.str5(9.9999))
+    introcs.assert_equals('9.999',  a3.str5(9.9993))
+    introcs.assert_equals('1.355',  a3.str5(1.3546))
+    introcs.assert_equals('1.354',  a3.str5(1.3544))
+    introcs.assert_equals('0.046',  a3.str5(.0456))
+    introcs.assert_equals('0.045',  a3.str5(.0453))
+    introcs.assert_equals('0.006',  a3.str5(.0056))
+    introcs.assert_equals('0.001',  a3.str5(.0013))
+    introcs.assert_equals('0.000',  a3.str5(.0004))
+    introcs.assert_equals('0.001',  a3.str5(.0009999))
+    introcs.assert_equals('0.000',  a3.str5(1e-9))
+
+
+def test_str5_color():
+    """
+    Test the str5 functions for cmyk and hsl.
+    """
+    print('Testing str5_cmyk and str5_hsl')
+
+    # Tests for str5_cmyk
+    # We need to make sure the coordinates round properly
+    text = a3.str5_cmyk(introcs.CMYK(98.448, 25.362, 72.8, 1.0))
+    introcs.assert_equals('(98.45, 25.36, 72.80, 1.000)',text)
+
+    text = a3.str5_cmyk(introcs.CMYK(0.0, 1.5273, 100.0, 57.846))
+    introcs.assert_equals('(0.000, 1.527, 100.0, 57.85)',text)
+
+    # Tests for str5_hsl
+    text = a3.str5_hsl(introcs.HSL(0.0, 0.313725490196, 0.5))
+    introcs.assert_equals('(0.000, 0.314, 0.500)', text)
+
+    text = a3.str5_hsl(introcs.HSL(98.448, 0.25362, 0.728))
+    introcs.assert_equals('(98.45, 0.254, 0.728)', text)
+
+
+def test_rgb_to_cmyk():
+    """
+    Test translation function rgb_to_cmyk
+    """
+    print('Testing rgb_to_cmyk')
+
+    # The function should guarantee accuracy to three decimal places
+    rgb = introcs.RGB(255, 255, 255)
+    cmyk = a3.rgb_to_cmyk(rgb)
+    introcs.assert_equals(0.0, round(cmyk.cyan,3))
+    introcs.assert_equals(0.0, round(cmyk.magenta,3))
+    introcs.assert_equals(0.0, round(cmyk.yellow,3))
+    introcs.assert_equals(0.0, round(cmyk.black,3))
+
+    rgb = introcs.RGB(0, 0, 0)
+    cmyk = a3.rgb_to_cmyk(rgb)
+    introcs.assert_equals(0.0, round(cmyk.cyan,3))
+    introcs.assert_equals(0.0, round(cmyk.magenta,3))
+    introcs.assert_equals(0.0, round(cmyk.yellow,3))
+    introcs.assert_equals(100.0, round(cmyk.black,3))
+
+    rgb = introcs.RGB(217, 43, 164)
+    cmyk = a3.rgb_to_cmyk(rgb)
+    introcs.assert_equals(0.0, round(cmyk.cyan,3))
+    introcs.assert_equals(80.184, round(cmyk.magenta,3))
+    introcs.assert_equals(24.424, round(cmyk.yellow,3))
+    introcs.assert_equals(14.902, round(cmyk.black,3))
+
+
+def test_cmyk_to_rgb():
+    """
+    Test translation function cmyk_to_rgb
+    """
+    print('Testing cmyk_to_rgb')
+    # Test 1: Pure white
+    cmyk = introcs.CMYK(0.0, 0.0, 0.0, 0.0)
+    rgb = a3.cmyk_to_rgb(cmyk)
+    introcs.assert_equals(255, rgb.red)
+    introcs.assert_equals(255, rgb.green)
+    introcs.assert_equals(255, rgb.blue)
+    # Test 2: Pure black (k = 100.0)
+    cmyk = introcs.CMYK(0.0, 0.0, 0.0, 100.0)
+    rgb = a3.cmyk_to_rgb(cmyk)
+    introcs.assert_equals(0, rgb.red)
+    introcs.assert_equals(0, rgb.green)
+    introcs.assert_equals(0, rgb.blue)
+    # Test 3: Mixed color requiring rounding across all channels
+    cmyk = introcs.CMYK(0.0, 80.184, 24.424, 14.902)
+    rgb = a3.cmyk_to_rgb(cmyk)
+    introcs.assert_equals(217, rgb.red)
+    introcs.assert_equals(43,  rgb.green)
+    introcs.assert_equals(164, rgb.blue)
+
+
+def test_rgb_to_hsl():
+    """
+    Test translation function rgb_to_hsl
+    """
+    print('Testing rgb_to_hsl')
+
+    # 1. maxrgb == minrgb AND l == 0 (Black)
+    hsl = a3.rgb_to_hsl(introcs.RGB(0, 0, 0))
+    introcs.assert_equals(0.0, round(hsl.hue, 3))
+    introcs.assert_equals(0.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.0, round(hsl.lightness, 3))
+
+    # 2. maxrgb == minrgb AND l == 1 (White)
+    hsl = a3.rgb_to_hsl(introcs.RGB(255, 255, 255))
+    introcs.assert_equals(0.0, round(hsl.hue, 3))
+    introcs.assert_equals(0.0, round(hsl.saturation, 3))
+    introcs.assert_equals(1.0, round(hsl.lightness, 3))
+
+    # 3. maxrgb == minrgb, but l is neither 0 nor 1 (Gray)
+    hsl = a3.rgb_to_hsl(introcs.RGB(128, 128, 128))
+    introcs.assert_equals(0.0, round(hsl.hue, 3))
+    introcs.assert_equals(0.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.502, round(hsl.lightness, 3))
+
+    # 4. maxrgb == red AND green >= blue (Orange)
+    hsl = a3.rgb_to_hsl(introcs.RGB(255, 128, 0))
+    introcs.assert_equals(30.118, round(hsl.hue, 3))
+    introcs.assert_equals(1.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.5, round(hsl.lightness, 3))
+
+    # 5. maxrgb == red AND green < blue (Rose / Pink-Red)
+    hsl = a3.rgb_to_hsl(introcs.RGB(255, 0, 128))
+    introcs.assert_equals(329.882, round(hsl.hue, 3))
+    introcs.assert_equals(1.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.5, round(hsl.lightness, 3))
+
+    # 6. maxrgb == green (Spring Green)
+    hsl = a3.rgb_to_hsl(introcs.RGB(0, 255, 128))
+    introcs.assert_equals(150.118, round(hsl.hue, 3))
+    introcs.assert_equals(1.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.5, round(hsl.lightness, 3))
+
+    # 7. maxrgb == blue (Purple / Violet)
+    hsl = a3.rgb_to_hsl(introcs.RGB(128, 0, 255))
+    introcs.assert_equals(270.118, round(hsl.hue, 3))
+    introcs.assert_equals(1.0, round(hsl.saturation, 3))
+    introcs.assert_equals(0.5, round(hsl.lightness, 3))
+
+    # 8. Partial saturation and lightness
+    hsl = a3.rgb_to_hsl(introcs.RGB(96, 64, 32))
+    introcs.assert_equals(30.0, round(hsl.hue, 3))
+    introcs.assert_equals(0.5, round(hsl.saturation, 3))
+    introcs.assert_equals(0.251, round(hsl.lightness, 3))
+
+
+def test_hsl_to_rgb():
+    """
+    Test translation function hsl_to_rgb
+    """
+    print('Testing hsl_to_rgb')
+
+    # Test 1: Pure white (L == 1.0)
+    rgb = a3.hsl_to_rgb(introcs.HSL(0.0, 0.0, 1.0))
+    introcs.assert_equals(255, rgb.red)
+    introcs.assert_equals(255, rgb.green)
+    introcs.assert_equals(255, rgb.blue)
+
+    # Test 2: Pure black (L == 0.0)
+    rgb = a3.hsl_to_rgb(introcs.HSL(0.0, 0.0, 0.0))
+    introcs.assert_equals(0, rgb.red)
+    introcs.assert_equals(0, rgb.green)
+    introcs.assert_equals(0, rgb.blue)
+
+    # Test 3: H_i == 0 (Orange)
+    rgb = a3.hsl_to_rgb(introcs.HSL(30.118, 1.0, 0.5))
+    introcs.assert_equals(255, rgb.red)
+    introcs.assert_equals(128, rgb.green)
+    introcs.assert_equals(0,   rgb.blue)
+
+    # Test 4: H_i == 1 (Yellow-Green)
+    rgb = a3.hsl_to_rgb(introcs.HSL(90.0, 1.0, 0.5))
+    introcs.assert_equals(128, rgb.red)
+    introcs.assert_equals(255, rgb.green)
+    introcs.assert_equals(0,   rgb.blue)
+
+    # Test 5: H_i == 2 (Spring Green)
+    rgb = a3.hsl_to_rgb(introcs.HSL(150.118, 1.0, 0.5))
+    introcs.assert_equals(0,   rgb.red)
+    introcs.assert_equals(255, rgb.green)
+    introcs.assert_equals(128, rgb.blue)
+
+    # Test 6: H_i == 3 (Cyan-Blue)
+    rgb = a3.hsl_to_rgb(introcs.HSL(210.0, 1.0, 0.5))
+    introcs.assert_equals(0,   rgb.red)
+    introcs.assert_equals(128, rgb.green)
+    introcs.assert_equals(255, rgb.blue)
+
+    # Test 7: H_i == 4 (Purple)
+    rgb = a3.hsl_to_rgb(introcs.HSL(270.118, 1.0, 0.5))
+    introcs.assert_equals(128, rgb.red)
+    introcs.assert_equals(0,   rgb.green)
+    introcs.assert_equals(255, rgb.blue)
+
+    # Test 8: H_i == 5 (Rose / Magenta-Red)
+    rgb = a3.hsl_to_rgb(introcs.HSL(329.882, 1.0, 0.5))
+    introcs.assert_equals(255, rgb.red)
+    introcs.assert_equals(0,   rgb.green)
+    introcs.assert_equals(128, rgb.blue)
+
+    # Test 9: Partial saturation and lightness
+    rgb = a3.hsl_to_rgb(introcs.HSL(30.0, 0.5, 0.25))
+    introcs.assert_equals(96, rgb.red)
+    introcs.assert_equals(64, rgb.green)
+    introcs.assert_equals(32, rgb.blue)
+
+
+def test_contrast_value():
+    """
+    Test translation function contrast_value
+    """
+    print('Testing contrast_value')
+
+    # contrast == 0.0 (extreme)
+    result = a3.contrast_value(0.0,0.0)
+    introcs.assert_floats_equal(0.5,result)
+
+    result = a3.contrast_value(1.0,0.0)
+    introcs.assert_floats_equal(0.5,result)
+
+    # contrast < 0.5, bottom part of sawtooth
+    result = a3.contrast_value(0.1,0.25)
+    introcs.assert_floats_equal(0.3,result)
+
+    # contrast < 0.5, middle of sawtooth
+    result = a3.contrast_value(0.4,0.3)
+    introcs.assert_floats_equal(0.4571429,result)
+
+    # contrast < 0.5, upper part of sawtooth
+    result = a3.contrast_value(0.9,0.35)
+    introcs.assert_floats_equal(0.8142857,result)
+
+    # contrast == 0.5, bottom part of sawtooth
+    result = a3.contrast_value(0.1,0.5)
+    introcs.assert_floats_equal(0.1,result)
+
+    # contrast == 0.5, middle of sawtooth
+    result = a3.contrast_value(0.6,0.5)
+    introcs.assert_floats_equal(0.6,result)
+
+    # contrast == 0.5, middle part of sawtooth
+    result = a3.contrast_value(0.9,0.5)
+    introcs.assert_floats_equal(0.9,result)
+
+    # contrast > 0.5, lower part of sawtooth
+    result = a3.contrast_value(0.1,0.65)
+    introcs.assert_floats_equal(0.05384615,result)
+
+    # contrast > 0.5, middle part of sawtooth
+    result = a3.contrast_value(0.4,0.75)
+    introcs.assert_floats_equal(0.2,result)
+
+    # contrast > 0.5, upper part of sawtooth
+    result = a3.contrast_value(0.9,0.7)
+    introcs.assert_floats_equal(0.95714286,result)
+
+    # contrast == 1.0 (extreme)
+    result = a3.contrast_value(0.2,1.0)
+    introcs.assert_floats_equal(0.0,result)
+
+    result = a3.contrast_value(0.6,1.0)
+    introcs.assert_floats_equal(1.0,result)
+
+    result = a3.contrast_value(0.5,1.0)
+    introcs.assert_floats_equal(1.0,result)
+
+
+def test_contrast_rgb():
+    """
+    Test translation function contrast_rgb
+    """
+    print('Testing contrast_rgb')
+
+    # 1. Darkening (less than 0.5) contrast
+    rgb = introcs.RGB(240, 15, 118)
+    a3.contrast_rgb(rgb,0.3)
+    introcs.assert_equals(220, rgb.red)
+    introcs.assert_equals(35,  rgb.green)
+    introcs.assert_equals(123, rgb.blue)
+
+    # 2. Neutral (0.5) contrast: values remain unchanged
+    rgb = introcs.RGB(100, 150, 200)
+    a3.contrast_rgb(rgb, 0.5)
+    introcs.assert_equals(100, rgb.red)
+    introcs.assert_equals(150, rgb.green)
+    introcs.assert_equals(200, rgb.blue)
+
+    # 3. Brightening/increasing (> 0.5) contrast: values pulled further apart
+    rgb = introcs.RGB(240, 15, 118)
+    a3.contrast_rgb(rgb, 0.7)
+    introcs.assert_equals(249, rgb.red)
+    introcs.assert_equals(6,   rgb.green)
+    introcs.assert_equals(105, rgb.blue)
+
+
+# # Script Code
+# # THIS PREVENTS THE TESTS RUNNING ON IMPORT
+if __name__ == '__main__':
+    test_complement()
+    test_str5()
+    test_str5_color()
+    test_rgb_to_cmyk()
+    test_cmyk_to_rgb()
+    test_rgb_to_hsl()
+    test_hsl_to_rgb()
+    test_contrast_value()
+    test_contrast_rgb()
+    print('Module a3 passed all tests.')

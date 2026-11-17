@@ -1,0 +1,11 @@
+hello
+world  
+ apple   
+banana
+	tabbed
+newline after
+  
+  both sides  
+
+
+   bla kba Sahsar skdads \\\/?
