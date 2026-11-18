@@ -1,5 +1,5 @@
 """
-A simple application displaying a text and an image.
+A simple application displaying a message that can be hidden with a key press.
 
 The purpose of this lab is to familiarize you with the basics of the game2d package.
 This will help you get started on the last assignment.
@@ -16,20 +16,13 @@ GAME_WIDTH  = 840
 # The initial height of the game display
 GAME_HEIGHT = 630
 
-# The initial state of the application
-STATE_BEGIN  = 0
-# After the font is loaded and initialized
-STATE_FINISH = 1
-
-# The number of steps between animation frames
-FRAME_STEP = 5
-
 class LabApp(GameApp):
     """
     The application class for this lab.
     
-    In this lab, you will implement three hidden lab attributes.  Read the instructions
-    and look at the constants above.
+    Displays a Hello World message.
+
+    Press any key to hide or show the message.
     """
     # HIDDEN ATTRIBUTES
     # Attribute _message: The message to display on the screen
@@ -37,12 +30,6 @@ class LabApp(GameApp):
     #
     # Attribute _visible: Whether the message is visible
     # Invariant: _visible is a bool
-    #
-    # Attribute _image: The image to decorate the welcome message
-    # Invariant: _image is a GSprite, a GImage, or None
-    #
-    # Attribute _state: The current application state
-    # Invariant: _state is one of STATE_BEGIN, STATE_FINISHED
     
     def start(self):
         """
@@ -52,17 +39,18 @@ class LabApp(GameApp):
         you should not override or change). This method is called once the 
         game is running.
         """
-        pass    # Implement me
+        self._message = GLabel(text='Hello World!', font_name='CuteFrog.ttf',
+                               font_size=64, x=self.width/2, y=self.height/2)
+        self._visible = True
     
     def update(self,dt):
         """
         Updates the game objects each frame.
         
-        This method is used when we want to change the objects (change the positions or
-        add new objects) AFTER the application is initialized.  In our case, we need it
-        because fonts do not finish loading until after start() has completed.
+        Toggles the message visibility whenever any key is pressed.
         """
-        pass    # Implement me
+        if self.input.is_key_pressed(''):
+            self._visible = not self._visible
     
     def draw(self):
         """
@@ -71,7 +59,8 @@ class LabApp(GameApp):
         Every single thing you want to draw in this game is a GObject. To draw a 
         GObject g, simply use the method g.draw(self.view). It is that easy!
         """
-        pass    # Implement me
+        if self._visible:
+            self._message.draw(self.view)
 
 
 # Application code
