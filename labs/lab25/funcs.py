@@ -25,12 +25,15 @@ def is_date(year, month, day):
     Parameter day: The candidate month
     Precondition: day is an int
     """
-    # IMPLEMENT ME
-    pass
-
+    from datetime import date
+    try:
+        date(year, month, day)
+        return True
+    except ValueError:
+        return False
 
 # PART 2
-def get_previous(filename):
+def get_previous(filename):d
     """
     Returns the number before the one stored in the file filename.
 
@@ -44,8 +47,18 @@ def get_previous(filename):
     Parameter filename: The name of the file to open
     Precondition: filename is a string
     """
-    # IMPLEMENT ME
-    pass
+    assert isinstance(filename, str), 'filename must be a string'
+
+    try:
+        with open(filename) as file:
+            contents = file.read()
+    except OSError:
+        return None
+
+    try:
+        return int(contents) - 1
+    except ValueError:
+        return contents
 
 
 # Part 3
